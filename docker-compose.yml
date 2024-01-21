@@ -2,17 +2,20 @@ version: '3.7'
 services:
   trino:
     hostname: trino
-    image: 'trinodb/trino:latest'
+    image: 'trinodb/trino:427'
     ports:
       - '8080:8080'
     volumes:
       - ${PWD}/trino-etc:/etc/trino
     networks:
       - trino-network
+    depends_on:
+      - hive-metastore
+      - minio
 
   mariadb:
     hostname: mariadb
-    image: mariadb:latest
+    image: mariadb:10.6.14
     ports:
       - 3306:3306
     environment:
@@ -24,7 +27,7 @@ services:
       - trino-network
 
   hive-metastore:
-    user: "${UID}:${GID}"
+    user: "1000:1000"
     hostname: hive-metastore
     build: .
     ports:
